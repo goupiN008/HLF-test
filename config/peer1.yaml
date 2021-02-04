@@ -1,0 +1,50 @@
+version: '2'
+
+networks:
+  fitcp:
+
+volumes:
+  data-peer1.fitcp.com:
+
+services:
+  # Fitcp peer1
+  peer1.fitcp.com:
+    container_name: peer1.fitcp.com
+    image: hyperledger/fabric-peer:$IMAGE_TAG
+    # Override variables in this section
+    environment:
+      - CORE_PEER_ID=peer1.fitcp.com
+      - CORE_PEER_ADDRESS=peer1.fitcp.com:7051
+      - FABRIC_CFG_PATH=/var/hyperledger/config
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_fitcp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/var/hyperledger/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/var/hyperledger/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/tls/ca.crt
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.fitcp.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.fitcp.com:7051
+    # Start the peer node
+    command: peer node start
+    # Host folder mappings
+    volumes:
+      # Folder with channel create tx file
+      - ${PWD}/config/fitcp:/var/hyperledger/config
+      # Map the folder with MSP for Peer
+      - ${PWD}/config/crypto-config/peerOrganizations/fitcp.com/peers/peer1.fitcp.com/msp:/var/hyperledger/msp
+      # Added to support the TLS setup
+      - ${PWD}/config/crypto-config/peerOrganizations/fitcp.com/peers/peer1.fitcp.com/tls:/var/hyperledger/tls
+      - /var/run/:/var/run/
+      - data-peer1.fitcp.com:/var/hyperledger/production
+    extra_hosts:
+      - "orderer.fitcp.com:${ORDERER1}"
+      - "orderer2.fitcp.com:${ORDERER2}"
+      - "orderer3.fitcp.com:${ORDERER3}"
+      - "peer2.fitcp.com:${NODE2}"
+      - "peer3.fitcp.com:${NODE3}"
+    # Map the ports on Host VM to container ports
+    ports:
+      - 7051:7051
+      - 7052:7052
+    networks:
+      - fitcp

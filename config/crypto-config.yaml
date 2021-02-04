@@ -1,0 +1,29 @@
+# Defines four organizations
+#  - Orderer organization
+#  - Fitcp
+#  - Budget
+#  - Expo
+##### Orderer for Fitcp
+OrdererOrgs:
+  - Name: Orderer
+    Domain: fitcp.com
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: orderer
+      
+#### Peers for Fitcp
+PeerOrgs:
+  # Peer configuration for Fitcp
+  - Name: Fitcp
+    Domain: fitcp.com
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: peer1.fitcp.com
+        CommonName: peer1.fitcp.com
+    Users:
+      Count: 1
+
+
+
+
+      

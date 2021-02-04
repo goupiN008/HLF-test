@@ -1,0 +1,16 @@
+config/crypto-config
+config/orderer/fitcpgenesis.block
+config/peer-update.tx
+config/traceabilitychannel.block
+config/traceabilitychannel.tx
+connection-profiles/connection-fitcp.json
+connection-profiles/connection-fitcp.yaml
+packages/*
+traceabilitychaincode/
+traceabilitychaincodeservice
+config/fabric-ca/*/IssuerPublicKey  
+config/fabric-ca/*/IssuerRevocationPublicKey  
+config/fabric-ca/*/ca-cert.pem  
+config/fabric-ca/*/fabric-ca-server.db 
+config/fabric-ca/*/msp  
+config/fabric-ca/*/tls-cert.pem
