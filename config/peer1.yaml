@@ -10,7 +10,7 @@ services:
   # Fitcp peer1
   peer1.fitcp.com:
     container_name: peer1.fitcp.com
-    image: hyperledger/fabric-peer:$IMAGE_TAG
+    image: hyperledger/fabric-peer
     # Override variables in this section
     environment:
       - CORE_PEER_ID=peer1.fitcp.com
@@ -36,12 +36,7 @@ services:
       - ${PWD}/config/crypto-config/peerOrganizations/fitcp.com/peers/peer1.fitcp.com/tls:/var/hyperledger/tls
       - /var/run/:/var/run/
       - data-peer1.fitcp.com:/var/hyperledger/production
-    extra_hosts:
-      - "orderer.fitcp.com:${ORDERER1}"
-      - "orderer2.fitcp.com:${ORDERER2}"
-      - "orderer3.fitcp.com:${ORDERER3}"
-      - "peer2.fitcp.com:${NODE2}"
-      - "peer3.fitcp.com:${NODE3}"
+
     # Map the ports on Host VM to container ports
     ports:
       - 7051:7051

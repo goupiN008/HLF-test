@@ -17,7 +17,7 @@ services:
   # orderer service
   orderer.fitcp.com:
     container_name: orderer.fitcp.com
-    image: hyperledger/fabric-orderer:$IMAGE_TAG
+    image: hyperledger/fabric-orderer
     command: orderer
     # Override environment variables for orderer in this section
     environment:
