@@ -192,11 +192,6 @@ Profiles:
 
             Organizations:
                 - <<: *Fitcp
-
-                 
-
-      
-                                
                   
   FitcpChannel:
     <<: *ChannelDefaults
@@ -207,7 +202,6 @@ Profiles:
         
         Organizations:
             - <<: *Fitcp
-            - <<: *Budget
 
         
 

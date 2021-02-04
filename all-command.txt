@@ -1,0 +1,31 @@
+#generate crypto meterial
+
+cd config
+cryptogen generate --config=./crypto-config.yaml
+
+#generate genesis block and channel tx
+
+export FABRIC_CFG_PATH=$PWD
+configtxgen -outputBlock  ./orderer/fitcpgenesis.block -channelID ordererchannel  -profile FitcpOrdererGenesis
+configtxgen -outputCreateChannelTx  fitcpchannel.tx -channelID fitcpchannel  -profile FitcpChannel
+cd ..
+
+#launch orderer and peer container
+
+docker-compose -f config/peer1.yaml up -d
+docker-compose -f config/orderer1.yaml up -d
+
+#create and join channel
+#set context
+
+export CORE_PEER_LOCALMSPID=FitcpMSP
+export FABRIC_CFG_PATH=$PWD/config/fitcp
+export CORE_PEER_ADDRESS=peer1.fitcp.com:7051
+export CORE_PEER_MSPCONFIGPATH=$PWD/config/crypto-config/peerOrganizations/fitcp.com/users/Admin@fitcp.com/msp
+export ORDERER_CA_ROOTFILE=$PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem
+export CORE_PEER_TLS_ROOTCERT_FILE=$PWD/config/crypto-config/peerOrganizations/fitcp.com/peers/peer1.fitcp.com/tls/ca.crt
+
+
+peer channel create -c fitcpchannel -f ./config/fitcpchannel.tx --outputBlock ./config/fitcpchannel.block -o orderer.fitcp.com:7050 --tls true --cafile $PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem
+peer channel join   -b ./config/traceabilitychannel.block -o orderer.fitcp.com:7050 --tls true --cafile $PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem
+
