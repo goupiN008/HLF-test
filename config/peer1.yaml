@@ -40,6 +40,5 @@ services:
     # Map the ports on Host VM to container ports
     ports:
       - 7051:7051
-      - 7052:7052
     networks:
       - fitcp
