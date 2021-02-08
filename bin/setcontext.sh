@@ -52,12 +52,12 @@ if [ "$3" == "first" ]; then
     export CC_NAME="trcc"
     export CC_PATH="traceabilitychaincode"
     export CC_VERSION="1.0"
-    export CC_CHANNEL_ID="traceabilitychannel"
+    export CC_CHANNEL_ID="fitcpchannel"
     export CC_LANGUAGE="golang"
 
     # Version 2.x
     export INTERNAL_DEV_VERSION="1.0"
-    export CC2_PACKAGE_FOLDER="$HOME/Traceability-HLF-docker/packages"
+    export CC2_PACKAGE_FOLDER="$PWD/packages"
     export CC2_SEQUENCE=1
     #export CC2_INIT_REQUIRED="--init-required"
     CC2_INIT_REQUIRED=" "
