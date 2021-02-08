@@ -30,3 +30,6 @@ peer channel create -c fitcpchannel -f ./config/fitcpchannel.tx --outputBlock ./
 peer channel join   -b ./config/fitcpchannel.block -o orderer.fitcp.com:7050 --tls true --cafile $PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem
 
 #install and instantiate chaincode
+
+peer lifecycle chaincode package $CC2_PACKAGE_FOLDER/$PACKAGE_NAME -p $CC_PATH \
+                    --label="$CC_NAME.$CC_VERSION-$INTERNAL_DEV_VERSION" -l $CC_LANGUAGE
