@@ -8,6 +8,7 @@ cryptogen generate --config=./crypto-config.yaml
 export FABRIC_CFG_PATH=$PWD
 configtxgen -outputBlock  ./orderer/fitcpgenesis.block -channelID ordererchannel  -profile FitcpOrdererGenesis
 configtxgen -outputCreateChannelTx  fitcpchannel.tx -channelID fitcpchannel  -profile FitcpChannel
+
 cd ..
 
 #launch orderer and peer container
@@ -34,6 +35,13 @@ TLS_PARAMETERS=" --tls true --cafile $PWD/config/crypto-config/ordererOrganizati
 peer channel create -c fitcpchannel -f ./config/fitcpchannel.tx --outputBlock ./config/fitcpchannel.block -o orderer.fitcp.com:7050 --tls true --cafile $PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem
 peer channel join   -b ./config/fitcpchannel.block -o orderer.fitcp.com:7050 --tls true --cafile $PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem
 
+export FABRIC_CFG_PATH=$PWD/config
+configtxgen -outputAnchorPeersUpdate ./config/peer-update.tx   -asOrg $ORG_NAME -channelID fitcpchannel  -profile FitcpChannel
+
+FABRIC_CFG_PATH=$PWD/config/fitcp
+peer channel update -f ./config/peer-update.tx -c fitcpchannel -o $ORDERER_ADDRESS $TLS_PARAMETERS
+
+
 #install and instantiate chaincode
 
 peer lifecycle chaincode package packages/trcc.1.0.tar.gz --path traceabilitychaincode --label="trcc.1.0" -l golang
@@ -44,5 +52,7 @@ OUTPUT=$(peer lifecycle chaincode queryinstalled -O json)
 PACKAGE_ID=$(echo $OUTPUT | jq -r ".installed_chaincodes[]|select(.label==\"$LABEL\")|.package_id")
 
 peer lifecycle chaincode approveformyorg --channelID fitcpchannel --name trcc --version 1.0 --package-id $PACKAGE_ID  -o orderer.fitcp.com:7050 $TLS_PARAMETERS --sequence 1
+
+peer lifecycle chaincode checkcommitreadiness --channelID fitcpchannel --name trcc --version 1.0 --sequence 1 --output json
 
 peer lifecycle chaincode commit -C fitcpchannel -n trcc -v 1.0 --sequence 1   $TLS_PARAMETERS  --waitForEvent
