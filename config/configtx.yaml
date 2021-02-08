@@ -234,7 +234,6 @@ Profiles:
         FitcpConsortium:
             Organizations:
                   - <<: *Fitcp
-                  - <<: *Budget
 
       Application:
             <<: *ApplicationDefaults
