@@ -13,7 +13,6 @@ services:
     image: hyperledger/fabric-peer
     # Override variables in this section
     environment:
-      - CORE_VM_ENDPOINT=unix:///var/run/docker.sock
       - CORE_PEER_ID=peer1.fitcp.com
       - CORE_PEER_ADDRESS=peer1.fitcp.com:7051
       - FABRIC_CFG_PATH=/var/hyperledger/config
