@@ -30,10 +30,11 @@ export ORDERER_ADDRESS=orderer.fitcp.com:7050
 export ORDERER_CA_ROOTFILE=$PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem
 export CORE_PEER_TLS_ROOTCERT_FILE=$PWD/config/crypto-config/peerOrganizations/fitcp.com/peers/peer1.fitcp.com/tls/ca.crt
 TLS_PARAMETERS=" --tls true --cafile $PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem"
+TLS_PARAMETERS=" --tls true --cafile $ORDERER_CA_ROOTFILE
 
+peer channel create -c fitcpchannel -f ./config/fitcpchannel.tx --outputBlock ./config/fitcpchannel.block -o $ORDERER_ADDRESS $TLS_PARAMETERS
+peer channel join   -b ./config/fitcpchannel.block -o $ORDERER_ADDRESS $TLS_PARAMETERS
 
-peer channel create -c fitcpchannel -f ./config/fitcpchannel.tx --outputBlock ./config/fitcpchannel.block -o orderer.fitcp.com:7050 --tls true --cafile $PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem
-peer channel join   -b ./config/fitcpchannel.block -o orderer.fitcp.com:7050 --tls true --cafile $PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem
 
 export FABRIC_CFG_PATH=$PWD/config
 configtxgen -outputAnchorPeersUpdate ./config/peer-update.tx   -asOrg $ORG_NAME -channelID fitcpchannel  -profile FitcpChannel
