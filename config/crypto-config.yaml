@@ -18,8 +18,7 @@ PeerOrgs:
     Domain: fitcp.com
     EnableNodeOUs: true
     Specs:
-      - Hostname: peer1.fitcp.com
-        CommonName: peer1.fitcp.com
+      - Hostname: peer1
     Users:
       Count: 1
 
