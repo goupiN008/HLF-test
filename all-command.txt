@@ -25,11 +25,25 @@ export CORE_PEER_MSPCONFIGPATH=$PWD/config/crypto-config/peerOrganizations/fitcp
 export CORE_PEER_TLS_ROOTCERT_FILE=$PWD/config/crypto-config/peerOrganizations/fitcp.com/peers/peer1.fitcp.com/tls/ca.crt
 export CORE_PEER_TLS_ENABLED=true
 
+TLS_PARAMETERS=" --tls true --cafile $PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem
+
 
 peer channel create -c fitcpchannel -f ./config/fitcpchannel.tx --outputBlock ./config/fitcpchannel.block -o orderer.fitcp.com:7050 --tls true --cafile $PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem
 peer channel join   -b ./config/fitcpchannel.block -o orderer.fitcp.com:7050 --tls true --cafile $PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem
 
 #install and instantiate chaincode
 
-peer lifecycle chaincode package $CC2_PACKAGE_FOLDER/$PACKAGE_NAME -p $CC_PATH \
-                    --label="$CC_NAME.$CC_VERSION-$INTERNAL_DEV_VERSION" -l $CC_LANGUAGE
+peer lifecycle chaincode package packages/trcc.1.0.tar.gz -p traceabilitychaincode \
+                    --label="trcc.1.0" -l golang
+
+peer lifecycle chaincode install  packages/trcc.1.0.tar.gz
+
+OUTPUT=$(peer lifecycle chaincode queryinstalled -O json)
+PACKAGE_ID=$(echo $OUTPUT | jq -r ".installed_chaincodes[]|select(.label==\"$LABEL\")|.package_id")
+
+peer lifecycle chaincode approveformyorg --channelID traceabilitychannel  --name trcc \
+        --version 1.0 --package-id $PACKAGE_ID --sequence 1 \
+        -o orderer.fitcp.com:7050  --tls true --cafile $PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem --waitForEvent
+
+
+peer lifecycle chaincode commit -C traceabilitychannel -n trcc -v 1.0 --sequence 1   $TLS_PARAMETERS  --waitForEvent
