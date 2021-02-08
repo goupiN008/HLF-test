@@ -24,7 +24,8 @@ export CORE_PEER_ADDRESS=peer1.fitcp.com:7051
 export CORE_PEER_MSPCONFIGPATH=$PWD/config/crypto-config/peerOrganizations/fitcp.com/users/Admin@fitcp.com/msp
 export CORE_PEER_TLS_ROOTCERT_FILE=$PWD/config/crypto-config/peerOrganizations/fitcp.com/peers/peer1.fitcp.com/tls/ca.crt
 export CORE_PEER_TLS_ENABLED=true
-
+export ORDERER_ADDRESS=orderer.fitcp.com:7050
+export CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=test_fitcp
 TLS_PARAMETERS=" --tls true --cafile $PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem"
 
 
@@ -40,6 +41,6 @@ peer lifecycle chaincode install  packages/trcc.1.0.tar.gz
 OUTPUT=$(peer lifecycle chaincode queryinstalled -O json)
 PACKAGE_ID=$(echo $OUTPUT | jq -r ".installed_chaincodes[]|select(.label==\"$LABEL\")|.package_id")
 
-lifecycle chaincode approveformyorg --channelID fitcpchannel --name trcc --version 1.0 --package-id $PACKAGE_ID  -o orderer.fitcp.com:7050 $TLS_PARAMETERS --sequence 1
+peer lifecycle chaincode approveformyorg --channelID fitcpchannel --name trcc --version 1.0 --package-id $PACKAGE_ID  -o orderer.fitcp.com:7050 $TLS_PARAMETERS --sequence 1
 
 peer lifecycle chaincode commit -C fitcpchannel -n trcc -v 1.0 --sequence 1   $TLS_PARAMETERS  --waitForEvent
