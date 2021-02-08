@@ -18,6 +18,7 @@ docker-compose -f config/peer1.yaml up -d
 #create and join channel
 #set context
 
+export FABRIC_LOGGING_SPEC=INFO
 export CORE_PEER_LOCALMSPID=FitcpMSP
 export FABRIC_CFG_PATH=$PWD/config/fitcp
 export CORE_PEER_ADDRESS=peer1.fitcp.com:7051
@@ -25,7 +26,8 @@ export CORE_PEER_MSPCONFIGPATH=$PWD/config/crypto-config/peerOrganizations/fitcp
 export CORE_PEER_TLS_ROOTCERT_FILE=$PWD/config/crypto-config/peerOrganizations/fitcp.com/peers/peer1.fitcp.com/tls/ca.crt
 export CORE_PEER_TLS_ENABLED=true
 export ORDERER_ADDRESS=orderer.fitcp.com:7050
-export CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=test_fitcp
+export ORDERER_CA_ROOTFILE=$PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem
+export CORE_PEER_TLS_ROOTCERT_FILE=$PWD/config/crypto-config/peerOrganizations/$1.com/peers/peer$2.$1.com/tls/ca.crt
 TLS_PARAMETERS=" --tls true --cafile $PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem"
 
 
