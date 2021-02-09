@@ -24,7 +24,7 @@ services:
       - CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/tls/ca.crt
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.fitcp.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.fitcp.com:7051
-    # Start the peer node
+   # Start the peer node
     command: peer node start
     # Host folder mappings
     volumes:
@@ -36,7 +36,8 @@ services:
       - ${PWD}/config/crypto-config/peerOrganizations/fitcp.com/peers/peer1.fitcp.com/tls:/var/hyperledger/tls
       - /var/run/:/var/run/
       - data-peer1.fitcp.com:/var/hyperledger/production
-
+    extra_hosts:
+      - "orderer.fitcp.com:10.23.4.39"
     # Map the ports on Host VM to container ports
     ports:
       - 7051:7051
