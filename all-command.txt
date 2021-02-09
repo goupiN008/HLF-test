@@ -19,6 +19,8 @@ docker-compose -f config/peer1.yaml up -d
 #create and join channel
 #set context
 
+. bin/setcontext.sh fitcp 1
+
 export FABRIC_LOGGING_SPEC=INFO
 export CORE_PEER_LOCALMSPID=FitcpMSP
 export FABRIC_CFG_PATH=$PWD/config/fitcp
@@ -29,10 +31,10 @@ export CORE_PEER_TLS_ENABLED=true
 export ORDERER_ADDRESS=orderer.fitcp.com:7050
 export ORDERER_CA_ROOTFILE=$PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem
 export CORE_PEER_TLS_ROOTCERT_FILE=$PWD/config/crypto-config/peerOrganizations/fitcp.com/peers/peer1.fitcp.com/tls/ca.crt
-TLS_PARAMETERS=" --tls true --cafile $PWD/config/crypto-config/ordererOrganizations/fitcp.com/orderers/orderer.fitcp.com/msp/tlscacerts/tlsca.fitcp.com-cert.pem"
-TLS_PARAMETERS=" --tls true --cafile $ORDERER_CA_ROOTFILE
+TLS_PARAMETERS=" --tls true --cafile $ORDERER_CA_ROOTFILE"
 
 peer channel create -c fitcpchannel -f ./config/fitcpchannel.tx --outputBlock ./config/fitcpchannel.block -o $ORDERER_ADDRESS $TLS_PARAMETERS
+
 peer channel join   -b ./config/fitcpchannel.block -o $ORDERER_ADDRESS $TLS_PARAMETERS
 
 
@@ -49,11 +51,15 @@ peer lifecycle chaincode package packages/trcc.1.0.tar.gz --path traceabilitycha
 
 peer lifecycle chaincode install  packages/trcc.1.0.tar.gz
 
-OUTPUT=$(peer lifecycle chaincode queryinstalled -O json)
-PACKAGE_ID=$(echo $OUTPUT | jq -r ".installed_chaincodes[]|select(.label==\"$LABEL\")|.package_id")
+peer lifecycle chaincode queryinstalled -O json
+PACKAGE_ID=
 
-peer lifecycle chaincode approveformyorg --channelID fitcpchannel --name trcc --version 1.0 --package-id $PACKAGE_ID  -o orderer.fitcp.com:7050 $TLS_PARAMETERS --sequence 1
+
+peer lifecycle chaincode approveformyorg --channelID fitcpchannel  --name trcc \
+            --version 1.0 --package-id $PACKAGE_ID --sequence 1 \
+            -o orderer.fitcp.com:7050  $TLS_PARAMETERS --waitForEvent
 
 peer lifecycle chaincode checkcommitreadiness --channelID fitcpchannel --name trcc --version 1.0 --sequence 1 --output json
 
 peer lifecycle chaincode commit -C fitcpchannel -n trcc -v 1.0 --sequence 1   $TLS_PARAMETERS  --waitForEvent
+
