@@ -36,8 +36,6 @@ services:
       - ${PWD}/config/crypto-config/peerOrganizations/fitcp.com/peers/peer1.fitcp.com/tls:/var/hyperledger/tls
       - /var/run/:/var/run/
       - data-peer1.fitcp.com:/var/hyperledger/production
-    extra_hosts:
-      - "orderer.fitcp.com:10.23.4.39"
     # Map the ports on Host VM to container ports
     ports:
       - 7051:7051
